@@ -17,6 +17,6 @@ Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 
 ## Architectural Position
 
-- **Runtime Supervised**: Supervised by R0 `hotcwap`.
-- **Compile-Time Dependencies**: Borrows R1 `vexspoke` (memory, atomics, sockets) and R2 `api-haven` (connector shapes, fanout).
+- **Runtime Supervised**: Supervised by the R1 host `hotcwap`.
+- **Compile-Time Dependencies**: Borrows the R2 `vexspoke` substrate (memory, atomics, sockets) and the R3 `api-haven` connector shapes (fanout).
 - **Consuming Applications**: Powering `darling-editor`, `semicolon` remote pairing, and `anti` bug reporting.
