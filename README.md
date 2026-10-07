@@ -1,5 +1,16 @@
 # sesh, by Vex.
 
+## CLion: CMake is IDE metadata only
+
+Open this repository root as a CMake project. `CMakeLists.txt` is an IDE-only
+blueprint entry: there are no production sources or C23 source targets yet,
+so there is nothing to provide semantic diagnostics or inlay hints for.
+No fake declarations, dependency downloads, linking or application runner are
+wired into it. IDE appearance is user-verified.
+
+Future builds belong to [b](https://github.com/vex-graph/b). The workspace's empty
+registry entry is not implemented session behavior or a standalone runtime build.
+
 Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 
 `sesh` is the networked collaboration, telemetry, and session state bridge for the `vexgraph` ecosystem. It powers real-time multi-user canvas pairing (Miro/Figma sync for `darling-editor`), remote VPS relaying, crash snapshot ingestion, and Cloudflare-edge traffic routing.
