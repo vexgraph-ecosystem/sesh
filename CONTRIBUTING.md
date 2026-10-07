@@ -23,10 +23,15 @@ This codebase strictly enforces the verbose, explicit boilerplate required acros
 
 All architectural rules and style invariants are governed by the central constitution:
 
-- **[preferences.md](https://github.com/vexgraph-ecosystem/vexspoke/blob/main/preferences.md)** (tracked in `vexspoke`, accessible locally at `../../../preferences.md`)
+- **[preferences.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a)** (one real, Git-ignored workspace-root `../../../preferences.md`, not a tracked Vexspoke file or symlink)
 - **[sesh-preferences.md](sesh-preferences.md)** (repo-local mirror binding sesh)
 
-Whenever preferences or conventions evolve, `../../../preferences.md` and `sesh-preferences.md` are updated and committed locally in the same cycle (the Living Preferences Law / Zero Drift).
+Under the Living Documentation Law, update affected contracts in the same cycle.
+Universal changes are published to the existing Gist and byte-verified; repo-local
+documentation is committed locally under the Git Workflow Law. Never auto-push.
+R2 comprises Vexspoke CPU computation/behavior and Relational Engine memory/storage
+and native C search. Sesh's include allowlist remains Vexspoke + api-haven; this
+blueprint has no engine migration or default allocator replacement.
 
 ---
 
@@ -37,4 +42,4 @@ Whenever preferences or conventions evolve, `../../../preferences.md` and `sesh-
 | **Single-Transaction Live Coordination** | Atomic sync transactions; never hold transaction locks across network boundaries (per the Single-Transaction Live Coordination Law). |
 | **No-Transaction-Across-Event-Dispatch** | Complete all transactional mutations before emitting events; never dispatch events with open transactions (per the No-Transaction-Across-Event-Dispatch Law). |
 | **Bounded Waits on Network Slices** | 100ms maximum wait times on network slices with graceful drop-degrade paths (per the Bounded Wait Law). |
-| **Teardown Reverse Order** | Session channels, relays, and sockets are cleanly torn down top-down before releasing memory arenas (per the Teardown Order Law). |
+| **Teardown Reverse Order** | Session channels, relays and sockets retire before memory arenas (per the Vertical Integration Law (Teardown)). |
