@@ -29,5 +29,5 @@ Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 ## Architectural Position
 
 - **Runtime Supervised**: Supervised by the R1 host `hotcwap`.
-- **Compile-Time Dependencies**: Borrows the R2 `vexspoke` substrate (memory, atomics, sockets) and the R3 `api-haven` connector shapes (fanout).
+- **Compile-Time Dependencies**: The allowlist remains Vexspoke + api-haven. R2 is split between Vexspoke CPU computation/behavior and Relational Engine memory/storage/native C search; that ownership does not grant Sesh a direct engine dependency. Migration is staged: existing Vexspoke memory/container ABI and default allocator remain. R1 owns lifetimes/residency; no C/Rust atomic-layout compatibility or automatic schema migration is assumed. GPU shaders/dispatch remain Graphvex R3. This source-free blueprint has no implemented session or engine integration.
 - **Consuming Applications**: Powering `darling-editor`, `semicolon` remote pairing, and `anti` bug reporting.
