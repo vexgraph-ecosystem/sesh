@@ -5,7 +5,7 @@
 ## 0. Constitution Link (supreme)
 - [preferences.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a) — real, Git-ignored workspace-root file at ../../../preferences.md, not a tracked Vexspoke file or symlink.
 - All universal laws in `../../../preferences.md` are mandatory and binding across the ecosystem.
-- This document codifies **exclusive** preferences for `sesh` (R4 Session Relay). R2 is split between Vexspoke computation/behavior and Relational Engine memory/storage/native C search. Sesh may borrow RE IO/NIO, Vexspoke CPU contracts and api-haven; graphics remain forbidden. Migrated native IO/NIO ownership does not implement this session blueprint or prove Rust/C integration.
+- This document codifies **exclusive** preferences for `sesh` (R4 Session Relay). R2 is split between Vexspoke computation/behavior and Relational Engine memory/storage/native C search. Sesh may borrow RE IO/NIO, Vexspoke CPU contracts and api-haven; graphics remain forbidden. Native IO/NIO ownership alone proves neither session host/cloud integration nor Rust/C integration; current session composition proof is local metadata only.
 
 ## 1. Repo-Local Law Index (Binding Matrix)
 
@@ -16,6 +16,7 @@ Universal laws are inherited from the canonical `../../../preferences.md` Index;
 | **Single-Transaction Live Coordination Law** | R4 Session Relay | Mandatory for `sesh` |
 | **No-Transaction-Across-Event-Dispatch Law** | R4 Session Relay | Mandatory for `sesh` |
 | **Snapshot Backup Boundary Law** | R4 explicit backup scheduling | Caller-buffer owner proof; cloud/durability gaps remain explicit |
+| **Session Composition and Identity Law** | R4 session objects and local operation admission | Per-class owner/identity/replay tests; no implicit distributed transaction |
 
 ## 2. Exclusive Repo-Local Laws (FULL PROSE RESTATEMENT)
 
@@ -86,6 +87,54 @@ implicitly uploaded. Google Drive is the planned first storage provider; iCloud
 requires its own identity/entitlement integration. HTTPS/OAuth, actual cloud
 idempotency, durable local journal, validated restore and collaborative merging
 remain future integration obligations, not claims established by the fake.
+
+### Session Composition and Identity Law
+
+`lang/sesh.h` owns the Sesh composition: borrowed AuthService, SeshClient,
+Workspace, Resource and Operations references. Public class contracts live in
+`src/lang/`; implementations in `src/session/`, one class per pair. SeshClient
+is intentionally prefixed because Graphvex's public `Client` already exists;
+consuming both libraries must not collide. FileSession/DirectorySession will
+compose Sesh, not duplicate its identity/admission/history machinery.
+
+AuthService borrows API Haven's credential descriptor and a trusted host/API
+identity verifier. Credentials alone never establish a principal. The verifier
+owns actual authentication and issuer/subject-to-principal mapping; Sesh does
+not claim OAuth verification merely from a fake callback. Configuration/failure
+revokes admitted identity. Secrets/context are redacted from all projections.
+Principal ID is derived through authenticate/revoke only: its lack of a raw
+setter is a scoped safety exception under the Conflict Triage Law and Single
+Class Per File Law (Java Law), marked in the implementation.
+
+The host assigns and persists nonzero identities. Client identifies an
+installation, Workspace the private principal-owned namespace, Resource its
+target, and (clientId, operationId) a retry identity. These are not pointers or
+ecosystem type IDs. Provider account linking, shared ACLs, durable identities
+and automatic globally unique generation remain unimplemented.
+
+Operations is a flat copied-intent/receipt ledger in host-owned storage. Reserve
+grows/moves backing records cold, with no escaped row pointer or permanent total
+ceiling. Count/backing/receipt flags mutate only through reserve/add/apply/clear,
+not arbitrary setters; this scoped Conflict Triage Law exception preserves
+initialized history and acknowledgement truth. Queued intent is never an applied
+receipt. Clearing history requires exclusion and coordinated baseline/identity
+epoch changes; replay protection lasts only while receipts remain retained.
+
+Sesh_submit validates admitted principal/client/workspace/resource scope, checks
+expected local revision, copies intent and records exactly one local revision
+advance. Replays do not advance again; conflicts, overflow and exhausted current
+storage preserve revision/history. All parts and sessions sharing them require
+the same caller-owned external serialization domain. No internal thread safety,
+cross-process atomicity, remote ACL, data/SQL execution or distributed CAS is
+inferred. Database transaction semantics stay with the database owner. Real
+providers must supply authoritative authorization/revision guarantees before
+multi-client synchronization is claimed. Close detaches, never destroys borrows.
+
+Registered proof is `python3 tests/sesh/session_run.py` (also run by the main
+Sesh runner): strict and ASan/UBSan owners, TSan caller-serialized four-client
+admission, supported/unsupported arities and Graphvex/Sesh header composition.
+Real files/directories, cloud providers, persistence and distributed operation
+application still need separate workflow/integration proof.
 
 ;;INTENTION("R4 Session Relay: lockless single-transaction live coordination; bounded wait networking; zero transaction across event dispatch.")
 
