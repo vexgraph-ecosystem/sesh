@@ -9,6 +9,27 @@ IDE appearance is user-verified. Integrated builds belong to
 [b](https://github.com/vex-graph/b); the isolated owner runner below proves the
 snapshot slice without building the engine.
 
+## Current State
+
+**Role:** R4 session/sync library. A local session composition + snapshot core,
+not a networked collaboration service.
+
+**Implemented and proven (macOS arm64, offline):** the seven session classes
+(`AuthService`, `SeshClient`, `Workspace`, `Resource`, `Operation`, `Operations`,
+`Sesh`) and the caller-buffer `SeshSnapshot`. Ten session owner targets run under
+strict + ASan/UBSan (plus a four-client TSan run) via `tests/sesh/session_run.py`
+and `tests/sesh/run.py`, proving admission/scope, secret redaction, copied intent
+vs applied receipt, stale conflicts, overflow and caller-serialized concurrency.
+The snapshot core round-trips bytes through an in-memory fake.
+
+**Stubbed / draft / absent:** cloud providers (Google Drive, iCloud), HTTPS/OAuth,
+a durable journal, a live relay (`seshd`), Cloudflare edge, realtime presence/
+cursors, canvas sync, a wire protocol, a telemetry sanitizer and a bug catcher —
+none have source. `FileSession`/`DirectorySession` are proposed, not implemented.
+
+**Platforms proven:** macOS arm64 only; Windows/Linux unproven. No engine/host
+integration is proven.
+
 ## Sesh: the session object
 
 The public vocabulary is implemented under `src/lang/`, one class per header
@@ -150,9 +171,15 @@ separate storage, byte comparisons and hostile path/symlink rejection. A fake
 provider alone is not Google proof, and the current snapshot test is not proof of
 any of these unimplemented classes.
 
-Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
+## Roadmap (not implemented)
 
-`sesh` is the networked collaboration, telemetry, and session state bridge for the `vexgraph` ecosystem. It powers real-time multi-user canvas pairing (Miro/Figma sync for `darling-editor`), remote VPS relaying, crash snapshot ingestion, and Cloudflare-edge traffic routing.
+The names below are the intended future scope — **none has source today**; the
+implemented surface is the session composition + snapshot core described above.
+
+Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
+`sesh` is positioned as the networked session/sync bridge (multiplayer canvas
+pairing, remote relay, crash snapshot ingestion, Cloudflare-edge routing), but
+the current tree implements none of that.
 
 ---
 
@@ -170,3 +197,23 @@ Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 - **Runtime Supervised**: Supervised by the R1 host `hotcwap`.
 - **Compile-Time Dependencies**: R4 may borrow Vexspoke R2 CPU computation/behavior contracts, Relational Engine IO/NIO/storage contracts and API Haven. Native IO/NIO and the compatible default production Memory C implementation are engine-owned, not rewritten into Rust. The session and snapshot cores use API vocabulary and CPU annotations only; live engine/host integration is not proved. R1 owns lifetimes/residency; no C/Rust atomic-layout compatibility or automatic schema migration is assumed. Graphics remain forbidden.
 - **Consuming Applications**: Powering `darling-editor`, `semicolon` remote pairing, and `anti` bug reporting.
+
+## Scope and Limitations
+
+**Scope:** R4 session identity and a caller-buffer snapshot core — borrowed
+credentials, local revision admission, a copied intent/receipt ledger and one
+explicit snapshot upload job. It owns no allocator, socket, filesystem, worker,
+secret or clock.
+
+**Deliberately not covered:**
+- No network/cloud: Drive/iCloud, HTTPS/OAuth, a relay daemon, Cloudflare edge,
+  presence and realtime collaboration have no source and are not implied.
+- No durable journal or distributed CAS; `SESH_APPLIED` means local revision
+  intent applied, never bytes uploaded or a remote transaction.
+- No internal thread safety: one shared external serialization domain is required.
+
+**Known limits and gaps:**
+- Snapshot progress has no core-level overall deadline; the caller must cancel.
+- `snapshot_io.h` is provider vocabulary only; the offline suite uses an
+  in-memory fake, which is not Google/Drive proof.
+- macOS arm64 only; no Windows or real host integration.
