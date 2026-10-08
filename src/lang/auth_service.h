@@ -7,6 +7,7 @@
  * canonical nonzero principal ID. Callback must return within bounded slices;
  * false/nonzero mismatch revokes local identity. No OAuth implementation here.
  * Credential pointer and callback context are borrowed; no secrets are printed.
+ * Verifier code must stay loaded through invocation; this class owns no reload pin.
  */
 typedef bool (*AuthServiceVerifyFn)(const ApiAuth *auth, void *context, uint64_t *outPrincipalId);
 typedef struct AuthService {
