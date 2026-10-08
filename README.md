@@ -61,6 +61,38 @@ its own platform identity/entitlement integration; it is not interchangeable OAu
 verified restoration, overall transfer deadlines, real host integration, concurrent
 edits and non-macOS execution remain unproved or unimplemented.
 
+## Accepted next public surface: file and directory sessions
+
+The snapshot core is a building block, not the final user-facing workflow.
+`FileSession` and `DirectorySession` are **proposed, not implemented classes**:
+
+- `FileSession_sync(session, localFile)` saves one file through the selected provider.
+- `DirectorySession_sync(session, localDirectory)` saves a versioned directory:
+  upload file content first, then publish a manifest only after every file succeeds.
+  Explicit sync is not a filesystem watcher. Ignore/exclusion rules must be explicit;
+  a Git ignore rule alone is not authorization to upload private content.
+- `DirectorySession_clone(session, localDirectory)` validates paths and file hashes,
+  then restores into a new or empty destination. It must not overwrite unrelated work.
+- `DirectorySession_rebase(session, localDirectory)` compares local/remote changes
+  against the last synced baseline, reports conflicts and preserves both versions.
+  Automatic text merging, multi-writer atomic publication and deletion propagation
+  are separate contracts, not implied by the verb.
+
+Session objects carry provider/remote namespace, baseline and job state. Local
+directories and files are supplied explicitly at operation admission. No generic
+`Session` base is introduced merely for naming; shared behavior must justify it.
+Sesh owns workflow and conflict policy, API Haven owns Google protocol/OAuth, and
+R2 owns local file/directory operations. The current engine `File` API has no
+directory-enumeration operation; that seam must be implemented/proved before a
+directory workflow can be delivered. Existing HTTP transport rejects HTTPS;
+the Drive adapter needs verified TLS integration as well as credentials.
+
+The next acceptance test is a real nested local directory with create/change/remove
+cases, partial-upload failure preserving the last published manifest, clone into
+separate storage, byte comparisons and hostile path/symlink rejection. A fake
+provider alone is not Google proof, and the current snapshot test is not proof of
+any of these unimplemented classes.
+
 Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 
 `sesh` is the networked collaboration, telemetry, and session state bridge for the `vexgraph` ecosystem. It powers real-time multi-user canvas pairing (Miro/Figma sync for `darling-editor`), remote VPS relaying, crash snapshot ingestion, and Cloudflare-edge traffic routing.
