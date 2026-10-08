@@ -79,5 +79,5 @@ Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 ## Architectural Position
 
 - **Runtime Supervised**: Supervised by the R1 host `hotcwap`.
-- **Compile-Time Dependencies**: R4 may borrow Vexspoke CPU contracts, Relational Engine IO/NIO/storage contracts and API Haven. Native IO/NIO and the compatible default production Memory C implementation are engine-owned, not rewritten into Rust. The snapshot slice uses API vocabulary and CPU annotations only; engine/host integration is not proved. R1 owns lifetimes/residency; no C/Rust atomic-layout compatibility or automatic schema migration is assumed. Graphics remain forbidden.
+- **Compile-Time Dependencies**: R4 may borrow Vexspoke R2 CPU computation/behavior contracts, Relational Engine IO/NIO/storage contracts and API Haven. Native IO/NIO and the compatible default production Memory C implementation are engine-owned, not rewritten into Rust. The snapshot slice uses API vocabulary and CPU annotations only; engine/host integration is not proved. R1 owns lifetimes/residency; no C/Rust atomic-layout compatibility or automatic schema migration is assumed. Graphics remain forbidden.
 - **Consuming Applications**: Powering `darling-editor`, `semicolon` remote pairing, and `anti` bug reporting.
