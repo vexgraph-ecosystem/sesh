@@ -9,6 +9,63 @@ IDE appearance is user-verified. Integrated builds belong to
 [b](https://github.com/vex-graph/b); the isolated owner runner below proves the
 snapshot slice without building the engine.
 
+## Sesh: the session object
+
+The public vocabulary is implemented under `src/lang/`, one class per header
+and `src/session/` implementation pair:
+
+| Class | Responsibility |
+| :--- | :--- |
+| `AuthService` | Borrow API Haven credentials and obtain a principal through an injected trusted verifier; reconfiguration/failure revokes identity. |
+| `SeshClient` (`lang/client.h`) | Host-assigned installation identity. Graphvex already owns the unrelated C type `Client`; both APIs can coexist. |
+| `Workspace` | Private principal-owned project identity. Remote ACLs/sharing are not implemented. |
+| `Resource` | Workspace-scoped target identity and local revision metadata. |
+| `Operation` | Copied intent: operation ID, originating client, workspace, resource and expected revision. |
+| `Operations` | Flat host-backed growable intent/receipt ledger. `reserve` copies records into larger caller storage; no `Operation **` graph. |
+| `Sesh` | Borrow these five parts; authenticate/scope-check admission, reject stale revisions, deduplicate intent and coordinate one local revision advance. |
+
+`lang/sesh.h` is the composed entry point. All classes provide arity constructors,
+safe getters, validated configuration and bounded string projections. Secret
+values/context are never dumped. Object/backing lifetimes and identity persistence
+are supplied by the host; no secret, allocator, socket or thread ownership moves
+into the session model. Numeric identities are application metadata, not ecosystem
+type IDs, memory addresses, hardware serials or automatic globally unique IDs.
+
+Typical admission, using caller-supplied live objects and ledger storage:
+
+```c
+Sesh session = Sesh(authService, client, workspace, resource, operations);
+Operation intent = Operation(operationId, SeshClient_getId(client),
+                             Workspace_getId(workspace), Resource_getId(resource),
+                             Resource_getRevision(resource));
+int result = Sesh_submit(&session, &intent);
+```
+
+Authenticate `authService` through its trusted adapter first. `SESH_APPLIED`
+means **local revision intent applied**, not bytes uploaded or a SQL transaction
+committed. Identical retained receipts return `SESH_REPLAY`; changed intent with
+the same `(clientId, operationId)` rejects. A merely queued intent is not an
+applied receipt. Stale revisions return `SESH_CONFLICT` without modifying resource
+or history. Capacity exhaustion preserves revision; caller can reserve larger
+storage and retry. Revision overflow rejects. `Sesh_close` quietly detaches parts,
+leaving borrowed identities/history usable.
+
+**Concurrency contract:** one shared external serialization domain is required
+for all operations on sessions, resources, authentication and ledgers—including
+different sessions sharing the same resource. The classes do not supply an
+internal mutex or distributed CAS. Clearing history/resetting revisions requires
+exclusion and a coordinated new identity epoch/baseline; dedup lasts only while
+receipts are retained. Borrowed backing rows must not be modified by consumers;
+`Operations_find` outputs go to disjoint caller storage.
+
+`python3 tests/sesh/run.py` now includes ten independently executed session owner
+targets per strict and ASan/UBSan configuration, plus the synchronized four-client
+Sesh owner under TSan. They prove scope rejection, auth revocation/secret redaction,
+growth, copied intent, replay versus pending receipt, stale conflicts, overflow,
+failure preservation and caller-serialized concurrency. Interop includes Graphvex's
+header without naming collisions. Neither fake verification nor local revision
+checks prove OAuth, remote authorization, persistence, distributed commits or sync.
+
 ## First implemented slice: explicit snapshot backup
 
 `src/snapshot/snapshot.{h,c}` owns one upload job in caller-owned staging storage.
@@ -78,9 +135,9 @@ The snapshot core is a building block, not the final user-facing workflow.
   Automatic text merging, multi-writer atomic publication and deletion propagation
   are separate contracts, not implied by the verb.
 
-Session objects carry provider/remote namespace, baseline and job state. Local
-directories and files are supplied explicitly at operation admission. No generic
-`Session` base is introduced merely for naming; shared behavior must justify it.
+FileSession/DirectorySession will compose the implemented `Sesh` rather than
+duplicate identity/admission/history. Local directories and files are supplied
+explicitly at operation admission; no second generic `Session` base is needed.
 Sesh owns workflow and conflict policy, API Haven owns Google protocol/OAuth, and
 R2 owns local file/directory operations. The current engine `File` API has no
 directory-enumeration operation; that seam must be implemented/proved before a
@@ -111,5 +168,5 @@ Session Management, VPS Relay, In-Engine Bug Ingestion & Cloudflare Edge Sync.
 ## Architectural Position
 
 - **Runtime Supervised**: Supervised by the R1 host `hotcwap`.
-- **Compile-Time Dependencies**: R4 may borrow Vexspoke R2 CPU computation/behavior contracts, Relational Engine IO/NIO/storage contracts and API Haven. Native IO/NIO and the compatible default production Memory C implementation are engine-owned, not rewritten into Rust. The snapshot slice uses API vocabulary and CPU annotations only; engine/host integration is not proved. R1 owns lifetimes/residency; no C/Rust atomic-layout compatibility or automatic schema migration is assumed. Graphics remain forbidden.
+- **Compile-Time Dependencies**: R4 may borrow Vexspoke R2 CPU computation/behavior contracts, Relational Engine IO/NIO/storage contracts and API Haven. Native IO/NIO and the compatible default production Memory C implementation are engine-owned, not rewritten into Rust. The session and snapshot cores use API vocabulary and CPU annotations only; live engine/host integration is not proved. R1 owns lifetimes/residency; no C/Rust atomic-layout compatibility or automatic schema migration is assumed. Graphics remain forbidden.
 - **Consuming Applications**: Powering `darling-editor`, `semicolon` remote pairing, and `anti` bug reporting.
