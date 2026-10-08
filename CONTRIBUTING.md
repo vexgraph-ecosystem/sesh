@@ -30,8 +30,11 @@ Under the Living Documentation Law, update affected contracts in the same cycle.
 Universal changes are published to the existing Gist and byte-verified; repo-local
 documentation is committed locally under the Git Workflow Law. Never auto-push.
 R2 comprises Vexspoke CPU computation/behavior and Relational Engine memory/storage
-and native C search. Sesh's include allowlist remains Vexspoke + api-haven; this
-blueprint has no engine migration or default allocator replacement.
+and native C search. Sesh may borrow both R2 public contracts and api-haven;
+native IO/NIO and the compatible default production Memory C implementation are
+engine-owned, not a Rust allocator rewrite. The caller-buffer snapshot core
+does not establish live engine integration. Run `python3 tests/sesh/run.py` from
+the workspace root; read the README's explicit provider and durability gaps.
 
 ---
 
