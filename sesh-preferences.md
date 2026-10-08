@@ -5,7 +5,7 @@
 ## 0. Constitution Link (supreme)
 - [preferences.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a) — real, Git-ignored workspace-root file at ../../../preferences.md, not a tracked Vexspoke file or symlink.
 - All universal laws in `../../../preferences.md` are mandatory and binding across the ecosystem.
-- This document codifies **exclusive** preferences for `sesh` (R4 Session Relay). R2 is split between Vexspoke computation/behavior and Relational Engine memory/storage/native C search. Sesh's include allowlist remains Vexspoke + api-haven; storage ownership does not grant a new direct engine dependency or imply migration. This repository remains a session blueprint.
+- This document codifies **exclusive** preferences for `sesh` (R4 Session Relay). R2 is split between Vexspoke computation/behavior and Relational Engine memory/storage/native C search. Sesh may borrow RE IO/NIO, Vexspoke CPU contracts and api-haven; graphics remain forbidden. Migrated native IO/NIO ownership does not implement this session blueprint or prove Rust/C integration.
 
 ## 1. Repo-Local Law Index (Binding Matrix)
 
