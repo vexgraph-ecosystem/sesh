@@ -35,6 +35,11 @@ native IO/NIO and the compatible default production Memory C implementation are
 engine-owned, not a Rust allocator rewrite. The caller-buffer snapshot core
 does not establish live engine integration. Run `python3 tests/sesh/run.py` from
 the workspace root; read the README's explicit provider and durability gaps.
+The public composition is `src/lang/sesh.h` with seven owning classes under
+`src/session/`. Run `python3 tests/sesh/session_run.py` for their strict,
+ASan/UBSan and caller-serialized TSan proof. `SeshClient` avoids the existing
+Graphvex `Client` symbol; do not introduce a global `Client` alias. Local revision
+admission is not remote authorization, data/SQL execution or distributed CAS.
 
 ---
 
