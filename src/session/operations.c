@@ -24,12 +24,15 @@
  * No private helpers. Count/items controlled through reserve/add/clear, not raw setters.
  */
 ;;INTENTION("per the Conflict Triage Law + Single Class Per File Law (Java Law): reserve/add/clear own backing/count updates; no scalar setter may forge deduplication history")
+// Returns an empty ledger with no borrowed backing storage.
 Operations Operations_0(void) { return (Operations) {0}; }
+// Binds caller-provided storage as the ledger's initial capacity.
 Operations Operations_2(OperationsSlot *items, size_t capacity) {
     Operations result = Operations_0();
     Operations_reserve(&result, items, capacity);
     return result;
 }
+// Rebinds to equal-or-larger caller storage, preserving all admitted rows.
 bool Operations_reserve(Operations *self, OperationsSlot *items, size_t capacity) {
     if (self == nullptr || items == nullptr || capacity == 0 || capacity > SIZE_MAX / sizeof(OperationsSlot)) {
         THROW("operations reserve: invalid storage");
@@ -45,6 +48,7 @@ bool Operations_reserve(Operations *self, OperationsSlot *items, size_t capacity
     (*self).capacity = capacity;
     return true;
 }
+// Finds a client-scoped operation ID and copies it to dest; absence leaves dest unchanged.
 bool Operations_find(const Operations *self, uint64_t clientId, uint64_t id, Operation *dest) {
     if (self == nullptr || dest == nullptr || clientId == 0 || id == 0) {
         THROW("operations find: invalid input");
@@ -60,6 +64,7 @@ bool Operations_find(const Operations *self, uint64_t clientId, uint64_t id, Ope
     }
     return false;
 }
+// Copies new intent, reports identical replay, and rejects changed or full admissions.
 int Operations_add(Operations *self, const Operation *operation) {
     if (self == nullptr || !Operation_isValid(operation)) {
         THROW("operations add: invalid operation");
@@ -82,6 +87,7 @@ int Operations_add(Operations *self, const Operation *operation) {
     (*self).count++;
     return OPERATIONS_ADDED;
 }
+// Reports whether the matching admitted intent has a successful apply receipt.
 bool Operations_isApplied(const Operations *self, uint64_t clientId, uint64_t id) {
     if (self == nullptr)
         return false;
@@ -93,6 +99,7 @@ bool Operations_isApplied(const Operations *self, uint64_t clientId, uint64_t id
     }
     return false;
 }
+// Applies admitted intent once when scope and expected revision match the resource.
 int Operations_apply(Operations *self, const Operation *operation, Resource *resource) {
     if (self == nullptr || !Operation_isValid(operation) || resource == nullptr ||
         Operation_getResourceId(operation) != Resource_getId(resource) ||
@@ -127,13 +134,18 @@ int Operations_apply(Operations *self, const Operation *operation, Resource *res
     THROW("operations apply: intent not admitted");
     return OPERATIONS_REJECTED;
 }
+// Returns the number of initialized ledger rows, or zero for null.
 SESH_GETTER(Operations, size_t, Count, count, 0)
+// Returns the current caller-provided row capacity, or zero for null.
 SESH_GETTER(Operations, size_t, Capacity, capacity, 0)
+// Forgets all rows without releasing the borrowed storage; caller must exclude users.
 void Operations_clear(Operations *self) {
     if (self != nullptr)
         (*self).count = 0;
 }
+// Formats the current initialized-row count as a bounded value summary.
 SESH_VALUE_STRING(Operations, SeshText_format(dest, cap, outTruncated, "%zu operations", (*self).count))
+// Formats the backing pointer and ledger counts into a bounded structure summary.
 bool Operations_toStringStruct(const Operations *self, char *dest, size_t cap, bool *outTruncated) {
     return self == nullptr ? SeshText_format(dest, cap, outTruncated, "nullptr") :
         SeshText_format(dest, cap, outTruncated, "Operations{items=%p,count=%zu,capacity=%zu}",

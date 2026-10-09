@@ -36,6 +36,7 @@
  */
 ;;INTENTION("per the Single Class Per File Law (Java Law) + Conflict Triage Law: configuration has validated setters; job-derived fields mutate only through queue/step/cancel so callers cannot forge acknowledgement or break provider borrows")
 
+// Allows configuration changes only when a job is not queued.
 static bool configurable(SeshSnapshot *self) {
     if (self == nullptr || (*self).state == SESH_SNAPSHOT_QUEUED) {
         THROW("snapshot configuration: null or active job");
@@ -44,11 +45,13 @@ static bool configurable(SeshSnapshot *self) {
     return true;
 }
 
+// Returns an idle job with the documented default retry delay and attempt limit.
 SeshSnapshot SeshSnapshot_0(void) {
     return (SeshSnapshot) { .retryDelayMs = SESH_SNAPSHOT_RETRY_DELAY_DEFAULT,
                            .maxAttempts = SESH_SNAPSHOT_MAX_ATTEMPTS_DEFAULT };
 }
 
+// Sets borrowed staging storage while idle and clears the queued byte length.
 bool SeshSnapshot_setBuffer(SeshSnapshot *self, uint8_t *buffer, size_t capacity) {
     if (!configurable(self))
         return false;
@@ -62,6 +65,7 @@ bool SeshSnapshot_setBuffer(SeshSnapshot *self, uint8_t *buffer, size_t capacity
     return true;
 }
 
+// Sets the provider callback and borrowed context while idle.
 bool SeshSnapshot_setProvider(SeshSnapshot *self, HavenSnapshotPutFn put, void *context) {
     if (!configurable(self))
         return false;
@@ -74,6 +78,7 @@ bool SeshSnapshot_setProvider(SeshSnapshot *self, HavenSnapshotPutFn put, void *
     return true;
 }
 
+// Sets nonzero retry delay and attempt limit while idle.
 bool SeshSnapshot_setRetryPolicy(SeshSnapshot *self, uint64_t delayMs, uint32_t maxAttempts) {
     if (!configurable(self))
         return false;
@@ -86,6 +91,7 @@ bool SeshSnapshot_setRetryPolicy(SeshSnapshot *self, uint64_t delayMs, uint32_t 
     return true;
 }
 
+// Copies bytes into staging storage and admits one keyed job if configured and idle.
 bool SeshSnapshot_queue(SeshSnapshot *self, uint64_t key, const uint8_t *bytes, size_t length) {
     if (self == nullptr || key == 0 || (bytes == nullptr && length != 0)) {
         THROW("snapshot queue: invalid input");
@@ -106,6 +112,7 @@ bool SeshSnapshot_queue(SeshSnapshot *self, uint64_t key, const uint8_t *bytes, 
     return true;
 }
 
+// Advances an eligible job once using caller time and the provider's result.
 int SeshSnapshot_step(SeshSnapshot *self, uint64_t nowMs) {
     if (self == nullptr) {
         THROW("snapshot step: null job");
@@ -132,6 +139,7 @@ int SeshSnapshot_step(SeshSnapshot *self, uint64_t nowMs) {
     return (*self).state;
 }
 
+// Cancels a queued job through the provider; null and inactive jobs are ignored.
 void SeshSnapshot_cancel(SeshSnapshot *self) {
     if (self == nullptr || (*self).state != SESH_SNAPSHOT_QUEUED)
         return;
@@ -139,25 +147,38 @@ void SeshSnapshot_cancel(SeshSnapshot *self) {
     (*self).state = SESH_SNAPSHOT_CANCELLED;
 }
 
+// Generates null-safe accessors for snapshot state and borrowed configuration.
 #define SNAPSHOT_GETTER(type, Name, field, fallback) \
     type SeshSnapshot_get##Name(const SeshSnapshot *self) { \
         if (self == nullptr) \
             return fallback; \
         return (*self).field; \
     }
+// Returns the borrowed staging buffer, or nullptr for null self.
 SNAPSHOT_GETTER(const uint8_t *, Buffer, buffer, nullptr)
+// Returns the staging buffer capacity, or zero for null self.
 SNAPSHOT_GETTER(size_t, Capacity, capacity, 0)
+// Returns the queued byte length, or zero for null self.
 SNAPSHOT_GETTER(size_t, Length, length, 0)
+// Returns the provider callback, or nullptr for null self.
 SNAPSHOT_GETTER(HavenSnapshotPutFn, Provider, put, nullptr)
+// Returns the borrowed provider context, or nullptr for null self.
 SNAPSHOT_GETTER(void *, Context, context, nullptr)
+// Returns the snapshot key, or zero for null self.
 SNAPSHOT_GETTER(uint64_t, Key, key, 0)
+// Returns the next eligible retry time, or zero for null self.
 SNAPSHOT_GETTER(uint64_t, NextAttemptMs, nextAttemptMs, 0)
+// Returns the configured retry delay, or zero for null self.
 SNAPSHOT_GETTER(uint64_t, RetryDelayMs, retryDelayMs, 0)
+// Returns the number of retry outcomes seen, or zero for null self.
 SNAPSHOT_GETTER(uint32_t, Attempts, attempts, 0)
+// Returns the retry attempt limit, or zero for null self.
 SNAPSHOT_GETTER(uint32_t, MaxAttempts, maxAttempts, 0)
+// Returns the current job state, or IDLE for null self.
 SNAPSHOT_GETTER(int, State, state, SESH_SNAPSHOT_IDLE)
 #undef SNAPSHOT_GETTER
 
+// Writes either the value summary or one-level field dump into a bounded buffer.
 static bool stringify(const SeshSnapshot *self, bool structure, char *dest, size_t cap, bool *outTruncated) {
     if (outTruncated != nullptr)
         *outTruncated = false;
@@ -188,10 +209,12 @@ static bool stringify(const SeshSnapshot *self, bool structure, char *dest, size
     return true;
 }
 
+// Formats the job's key, byte count, and state into a bounded value summary.
 bool SeshSnapshot_toString(const SeshSnapshot *self, char *dest, size_t cap, bool *outTruncated) {
     return stringify(self, false, dest, cap, outTruncated);
 }
 
+// Formats all snapshot fields into a bounded one-level structure summary.
 bool SeshSnapshot_toStringStruct(const SeshSnapshot *self, char *dest, size_t cap, bool *outTruncated) {
     return stringify(self, true, dest, cap, outTruncated);
 }
