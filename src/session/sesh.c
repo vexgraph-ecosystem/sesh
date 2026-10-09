@@ -21,7 +21,9 @@
  * toString/toStringStruct (child VALUE projections, never credential dumps).
  * No private helpers. Every shared component requires external serialization.
  */
+// Returns an unbound session composition.
 Sesh Sesh_0(void) { return (Sesh) {0}; }
+// Binds all borrowed components; rejects any missing component.
 Sesh Sesh_5(AuthService *authService, SeshClient *client, Workspace *workspace, Resource *resource, Operations *operations) {
     if (authService == nullptr || client == nullptr || workspace == nullptr || resource == nullptr || operations == nullptr) {
         THROW("sesh binding: missing component");
@@ -29,6 +31,7 @@ Sesh Sesh_5(AuthService *authService, SeshClient *client, Workspace *workspace, 
     }
     return (Sesh) {authService, client, workspace, resource, operations};
 }
+// Generates a nonnull component binder and null-safe borrowed-reference getter.
 #define SESH_PART(Type, Name, field) \
     bool Sesh_set##Name(Sesh *self, Type *value) { \
         if (self == nullptr || value == nullptr) { \
@@ -43,12 +46,18 @@ Sesh Sesh_5(AuthService *authService, SeshClient *client, Workspace *workspace, 
             return nullptr; \
         return (*self).field; \
     }
+// Binds and retrieves the borrowed authentication service.
 SESH_PART(AuthService, AuthService, authService)
+// Binds and retrieves the borrowed installation identity.
 SESH_PART(SeshClient, Client, client)
+// Binds and retrieves the borrowed workspace namespace.
 SESH_PART(Workspace, Workspace, workspace)
+// Binds and retrieves the borrowed resource/revision record.
 SESH_PART(Resource, Resource, resource)
+// Binds and retrieves the borrowed operation-history ledger.
 SESH_PART(Operations, Operations, operations)
 #undef SESH_PART
+// Validates identity/scope and revision, records intent, then advances one local revision.
 int Sesh_submit(Sesh *self, const Operation *operation) {
     if (self == nullptr || !Operation_isValid(operation)) {
         THROW("sesh submit: invalid operation");
@@ -90,11 +99,14 @@ int Sesh_submit(Sesh *self, const Operation *operation) {
         return SESH_REJECTED;
     return Operations_apply(operations, operation, resource) == OPERATIONS_ADDED ? SESH_APPLIED : SESH_REJECTED;
 }
+// Detaches all borrowed components without destroying or mutating them.
 void Sesh_close(Sesh *self) {
     if (self != nullptr)
         *self = Sesh_0();
 }
+// Formats the bound workspace and resource identities as a bounded summary.
 SESH_VALUE_STRING(Sesh, SeshText_format(dest, cap, outTruncated, "sesh workspace %llu resource %llu", (unsigned long long) Workspace_getId((*self).workspace), (unsigned long long) Resource_getId((*self).resource)))
+// Formats bounded one-level VALUE projections of the borrowed components.
 bool Sesh_toStringStruct(const Sesh *self, char *dest, size_t cap, bool *outTruncated) {
     if (self == nullptr)
         return SeshText_format(dest, cap, outTruncated, "nullptr");
