@@ -1,13 +1,7 @@
 # sesh, by Vex.
 
-## CLion: CMake is IDE metadata only
-
-Open this repository root as a CMake project. `CMakeLists.txt` supplies an excluded
-C23 object target for diagnostics and inlay hints. Supply local Vexspoke and
-API Haven source roots; no fake declarations, downloads or application runner.
-IDE appearance is user-verified. Integrated builds belong to
-[b](https://github.com/vex-graph/b); the isolated owner runner below proves the
-snapshot slice without building the engine.
+Build with [b](https://github.com/vex-graph/b); the isolated owner runner below
+proves the local session/snapshot slice without building the full ecosystem.
 
 ## Current State
 
