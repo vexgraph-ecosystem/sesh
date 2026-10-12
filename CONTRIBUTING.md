@@ -19,11 +19,11 @@ This codebase strictly enforces the verbose, explicit boilerplate required acros
 
 ---
 
-## 2. Supreme Living Document: `../../../preferences.md` & Repo-Local Preferences
+## 2. Supreme Living Document: `../../gist/PREFERENCES.md` & Repo-Local Preferences
 
 All architectural rules and style invariants are governed by the central constitution:
 
-- **[preferences.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a)** (one real, Git-ignored workspace-root `../../../preferences.md`, not a tracked Vexspoke file or symlink)
+- **[preferences.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a)** (one real, Git-ignored workspace `../../gist/PREFERENCES.md`, not a tracked Vexspoke file or symlink)
 - **[sesh-preferences.md](sesh-preferences.md)** (repo-local mirror binding sesh)
 
 Under the Living Documentation Law, update affected contracts in the same cycle.
@@ -36,7 +36,7 @@ engine-owned, not a Rust allocator rewrite. The caller-buffer snapshot core
 does not establish live engine integration. Run `python3 tests/sesh/run.py` from
 the workspace root; read the README's explicit provider and durability gaps.
 The public composition is `src/lang/sesh.h` with seven owning classes under
-`src/session/`. Run `python3 tests/sesh/session_run.py` for their strict,
+`src/session`. Run `python3 tests/sesh/session_run.py` for their strict,
 ASan/UBSan and caller-serialized TSan proof. `SeshClient` avoids the existing
 Graphvex `Client` symbol; do not introduce a global `Client` alias. Local revision
 admission is not remote authorization, data/SQL execution or distributed CAS.
