@@ -9,6 +9,7 @@
 #define SESH_APPLIED 1
 #define SESH_REPLAY 2
 #define SESH_CONFLICT 3
+
 /* Non-owning session composition. Every component, credentials, context and
  * ledger backing remains live until close/rebind, with all callers excluded.
  * Binding does not authenticate. Host drives AuthService verification separately.
@@ -23,6 +24,8 @@ typedef struct Sesh {
     Resource *resource;
     Operations *operations;
 } Sesh;
+
+
 Sesh Sesh_0(void);
 Sesh Sesh_5(AuthService *authService, SeshClient *client, Workspace *workspace, Resource *resource, Operations *operations);
 #define Sesh(...) SESH_CONSTRUCT(Sesh, __VA_ARGS__)
