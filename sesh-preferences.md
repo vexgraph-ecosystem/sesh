@@ -1,13 +1,14 @@
 # sesh — Repo-Local Living Preferences
-> Governed by the Living Documentation Law. Universal authority: workspace `PREFERENCES.md` at the published Gist.
+> Universal constitution: `gist.md` is the compressed law list; `PREFERENCES.md` is its rationale.
 
 ## 0. Constitution Link (supreme)
-- [preferences.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a) — canonical Gist; real, Git-ignored workspace source at `../../gist/PREFERENCES.md`, not a tracked Vexspoke file or symlink.
-- All universal laws in `../../gist/PREFERENCES.md` bind this repository. This file defines exclusive `sesh` (R4 Session Relay) rules: R2 splits Vexspoke computation/behavior from Relational Engine memory/storage/native C search; Sesh may borrow RE IO/NIO, Vexspoke CPU contracts and api-haven, never graphics. Native IO/NIO ownership proves neither session host/cloud nor Rust/C integration; current session-composition proof is local metadata only.
+- [gist.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a#file-gist-md) — the compressed law list, mirrored in this workspace at `../../../metadata/gists/preferences/gist.md`. It is the only normative law text; `../../../PREFERENCES.md` carries the rationale and is never ingested whole. Numbers are slice addresses inside one file, never law identity: cite by Title.
+- All universal laws bind this repository. Read one on demand from the workspace root: `./tools/prefs law "<title>"`, `./tools/prefs section "<section>"`, `./tools/prefs repo <name>`.
+- This file defines exclusive `sesh` (R4 Session Relay) rules: R2 splits Vexspoke computation/behavior from Relational Engine memory/storage/native C search; Sesh may borrow RE IO/NIO, Vexspoke CPU contracts, api-haven and hotcwap's one-seam window, and implements no graphics of its own. Native IO/NIO ownership proves neither session host/cloud nor Rust/C integration; current session-composition proof is local metadata only.
 
 ## 1. Repo-Local Law Index (Binding Matrix)
 
-Universal laws inherit from the canonical `../../gist/PREFERENCES.md` Index; this table lists this repository's additions.
+Universal laws inherit from the compressed constitution (`../../../metadata/gists/preferences/gist.md`); this table lists this repository's additions.
 
 | Law Title | Scope | Enforcement |
 | :--- | :--- | :--- |
@@ -42,7 +43,7 @@ Provider callbacks return within bounded slices and retain key/content across pe
 
 Configuration has validated symmetric APIs. Getters expose job-derived length, identity, retry count, next-attempt time and state; only queue/step/cancel change them. Scoped managed exception to unrestricted scalar setters under the Conflict Triage Law and Single Class Per File Law (Java Law), marked `;;INTENTION`, preserves acknowledgement truth and borrow safety. No setter may forge SAVED or drop an active borrow.
 
-Proof: `python3 tests/sesh/run.py` runs strict/assertion-enabled and ASan/UBSan owners covering offline fake put/get, rejection diagnostics, immutable admission, retry clock arithmetic and cancellation. Only disposable ignored `../../tests/sesh/test.txt` is for an explicitly authorized cloud smoke test; tracked test source is never ignored. No canonical preferences or secrets are implicitly uploaded. Google Drive is the planned first provider; iCloud needs identity/entitlement integration. HTTPS/OAuth, actual cloud idempotency, durable local journal, validated restore and collaborative merging remain future obligations, not proved by the fake.
+Proof: `python3 tests/sesh/run.py` runs strict/assertion-enabled and ASan/UBSan owners covering offline fake put/get, rejection diagnostics, immutable admission, retry clock arithmetic and cancellation. Only disposable ignored `../../../tests/sesh/test.txt` is for an explicitly authorized cloud smoke test; tracked test source is never ignored. No canonical preferences or secrets are implicitly uploaded. Google Drive is the planned first provider; iCloud needs identity/entitlement integration. HTTPS/OAuth, actual cloud idempotency, durable local journal, validated restore and collaborative merging remain future obligations, not proved by the fake.
 
 ### Session Composition and Identity Law
 
