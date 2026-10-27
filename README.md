@@ -11,8 +11,8 @@ not a networked collaboration service.
 **Implemented and proven (macOS arm64, offline):** the seven session classes
 (`AuthService`, `SeshClient`, `Workspace`, `Resource`, `Operation`, `Operations`,
 `Sesh`) and the caller-buffer `SeshSnapshot`. Ten session owner targets run under
-strict + ASan/UBSan (plus a four-client TSan run) via `../../tests/sesh/session_run.py`
-and `../../tests/sesh/run.py`, proving admission/scope, secret redaction, copied intent
+strict + ASan/UBSan (plus a four-client TSan run) via `../../../tests/sesh/session_run.py`
+and `../../../tests/sesh/run.py`, proving admission/scope, secret redaction, copied intent
 vs applied receipt, stale conflicts, overflow and caller-serialized concurrency.
 The snapshot core round-trips bytes through an in-memory fake.
 
@@ -104,9 +104,9 @@ From the workspace root:
 python3 tests/sesh/run.py
 ```
 
-The tracked runner and `../../tests/sesh/snapshot/snapshot_test.c` compile the real core
+The tracked runner and `../../../tests/sesh/snapshot/snapshot_test.c` compile the real core
 with strict C23/assertions, then ASan/UBSan, under bounded subprocess watchdogs.
-They copy ignored `../../tests/sesh/test.txt` through an in-memory fake and restore
+They copy ignored `../../../tests/sesh/test.txt` through an in-memory fake and restore
 identical bytes. The runner creates disposable input if absent and verifies its
 Git ignore rule. No canonical preferences file is uploaded or changed.
 
